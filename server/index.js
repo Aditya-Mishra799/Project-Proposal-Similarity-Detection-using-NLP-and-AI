@@ -21,6 +21,8 @@ app.use(session({
     store : new pgSession({
         pool : pool,
         tableName : 'user_sessions',
+        schemaName: process.env.SCHEMA_NAME,
+        createTableIfMissing: true,
     }),
     // used to sign the session id cookies
     secret: process.env.SESSION_SECRET,
@@ -39,6 +41,9 @@ app.use(session({
 }))
 
 // ROUTES ----------------------------------------------------------
+app.get('/', (req,res)=>{
+    return res.send({ message: 'This is backend API to interact with database and similarity checker.' });
+})
 
 // Auth routes
 const authRoutes = require("./routes/auth")
