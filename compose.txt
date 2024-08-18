@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  db:
+    build: ./database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin1234
+      POSTGRES_DB: projectDB
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend-similarity-checker
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: admin
+      DB_PASSWORD: admin1234
+      DB_NAME: projectDB
+      DB_PORT: 5432
+      SERVER_PORT: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend-similarity-checker:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  nodejs-server:
+    build: ./server
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: admin
+      DB_PASSWORD: admin1234
+      DB_NAME: projectDB
+      DB_PORT: 5432
+      SERVER_PORT: 5000
+      SESSION_SECRET: anyHashGenerated
+      SCHEMA_NAME: project_db
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+    command: npm start
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - nodejs-server
+    environment:
+      VITE_BACKEND_URL: http://nodejs-server:5000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    command: npm run dev
+
+volumes:
+  postgres_data:

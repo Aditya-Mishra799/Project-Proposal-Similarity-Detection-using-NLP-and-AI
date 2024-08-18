@@ -9,7 +9,6 @@ function App() {
     <ChakraProvider>
       <Navbar/>
       <Main/>
-      Hello
       <Footer/>
     </ChakraProvider>
     </>

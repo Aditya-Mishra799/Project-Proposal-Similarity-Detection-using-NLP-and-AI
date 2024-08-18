@@ -9,7 +9,8 @@ const user_table = 'project_db.users'
 // route to register the user
 router.post('/register', async(req, res) =>{
     const {email, password, role = 'student'} = req.body
-    const {error} = userValidationScehma.validate({email, password})
+    console.log(req.body)
+    const {error} = userValidationScehma.validate({email, password, role}, { context: { isRegistration: true } })
     if(error){
         return res.status(400).json({message : error.details[0].message})
     }
@@ -41,6 +42,10 @@ router.post('/login', async(req, res)=>{
         return res.status(200).json({ message: 'Already logged in' });
     }
     const {email, password} = req.body
+    const {error} = userValidationScehma.validate({email, password}, { context: { isRegistration: false } })
+    if(error){
+        return res.status(400).json({message : error.details[0].message})
+    }
     try {
         const result = await pool.query(
             `SELECT * from ${user_table} WHERE email = $1;`,
@@ -62,7 +67,7 @@ router.post('/login', async(req, res)=>{
             email: user.email,
             role: user.role,
         } 
-        return res.status(200).json({ message: 'Logged in successfully' });
+        return res.status(200).json({ user:req.session.user,message: 'Logged in successfully' });
 
     } catch (error) {
         console.error(error)

@@ -1,5 +1,6 @@
-const Joi = require("joi")
-const userValidationScehma = Joi.object({
+const Joi = require("joi");
+
+const userValidationSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()
         .min(8)
@@ -13,8 +14,21 @@ const userValidationScehma = Joi.object({
         .messages({
             'string.min': 'Password must be at least 8 characters long',
             'string.pattern.base': 'Password must meet complexity requirements',
-            'any.required': 'Password is required'
+            'any.required': 'Password is required',
         }),
-})
 
-module.exports = userValidationScehma
+    role: Joi.string()
+        .valid('student', 'teacher', 'admin')
+        .when('$isRegistration', {
+            is: true,
+            then: Joi.required().messages({
+                'any.only': 'Role must be either student, teacher or admin',
+                'any.required': 'Role is required',
+            }),
+            otherwise: Joi.optional(),
+        })
+});
+
+// Export schema
+module.exports = userValidationSchema;
+module.exports.default = userValidationSchema;
