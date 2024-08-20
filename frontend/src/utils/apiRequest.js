@@ -13,6 +13,7 @@ export const apiRequest = async (endpoint, messageBody, method = 'GET', headers 
         const response = await fetch(url, {
             method: method,
             headers: headers,
+            credentials: 'include', 
             body: JSON.stringify(messageBody),
         });
 

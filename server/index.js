@@ -7,9 +7,14 @@ const pgSession = require("connect-pg-simple")(session)
 
 const app = express()
 port = process.env.SERVER_PORT || 5000
+// Allow specific origin and credentials
+const corsOptions = {
+    origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5713', 
+    credentials: true, // Allows cookies to be sent
+  };
 
 // middle-ware
-app.use(cors())
+app.use(cors(corsOptions))
 
 // this gives access to request.body, so that we can get json data pass by user
 app.use(express.json());

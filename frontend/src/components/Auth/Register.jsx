@@ -26,29 +26,28 @@ import { useToastService } from '../../hooks/toastService';
 
 const Register = () => {
     const [show, setShow] = useState(false)
-    const {showToast} = useToastService()
+    const { showToast } = useToastService()
     const handleShowPassword = () => setShow(!show)
     const navigate = useNavigate();
-    const { handleSubmit, register, control,reset, formState: { isSubmitting, errors } } = useForm({
+    const { handleSubmit, register, control, reset, formState: { isSubmitting, errors } } = useForm({
         resolver: yupResolver(userValidationSchema),
         context: { isRegistration: false }, // Pass context to the schema
     });
-
+    console.log(errors);
     const onSubmit = async (data) => {
-        console.log(data)
         const { data: responseData, error } = await apiRequest('/auth/register', data, 'POST');
-    
+
         if (error) {
             showToast({
                 title: 'Error',
-                description: error,
+                description: error || 'Unkown error occurred, try again',
                 status: 'error',
                 duration: 5000,
             });
         } else {
             showToast({
                 title: 'Success',
-                description: 'Registration successful!',
+                description: responseData?.message || 'Registration successful!',
                 status: 'success',
                 duration: 5000,
             });
@@ -58,7 +57,7 @@ const Register = () => {
             }, 1000);
         }
     };
-    
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -128,7 +127,11 @@ const Register = () => {
                 </FormControl>
 
                 {/* Submit Button */}
-                <Button type="submit" colorScheme="teal" width="full" isLoading={isSubmitting}>
+                <Button type="submit"
+                    colorScheme="teal"
+                    width="full"
+                    isDisabled={Object.keys(errors).length !== 0}
+                    isLoading={isSubmitting}>
                     Register
                 </Button>
 

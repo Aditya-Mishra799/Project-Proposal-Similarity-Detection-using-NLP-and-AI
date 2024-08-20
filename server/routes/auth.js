@@ -9,7 +9,6 @@ const user_table = 'project_db.users'
 // route to register the user
 router.post('/register', async(req, res) =>{
     const {email, password, role = 'student'} = req.body
-    console.log(req.body)
     const {error} = userValidationScehma.validate({email, password, role}, { context: { isRegistration: true } })
     if(error){
         return res.status(400).json({message : error.details[0].message})
@@ -39,6 +38,7 @@ router.post('/register', async(req, res) =>{
 //route to log in user
 router.post('/login', async(req, res)=>{
     if(req.session?.user){
+        console.log('User already logged in')
         return res.status(200).json({ message: 'Already logged in' });
     }
     const {email, password} = req.body
