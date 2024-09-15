@@ -26,14 +26,15 @@ def read_projects(skip = 0, limit = 10, db = Depends(get_db)):
 
 @app.get('/project/similar')
 def get_similar_projects(title:str = '', abstract: str = '', category:str = '', k:int = 5, db:Session = Depends(get_db)):
+    print('Processing request for similarity search ...')
     query = np.array([f"{title} {abstract} {category}"])
-
     similar_project_ids, distances, similarity_scores = query_faiss_index(query, k)
-
-    print(similar_project_ids, similarity_scores)
-    
-    projects = db.query(Project).filter(Project.project_id.in_(similar_project_ids)).all()
-    return list(zip(projects, similarity_scores))
+    projects = []
+    for id, score in zip(similar_project_ids, similarity_scores):
+        project = db.query(Project).get(id)
+        projects.append({"project" : project, "score": score})
+    print('Similarity search completed')
+    return projects
 
 @app.get("/build-db/")
 def build_db(db = Depends(get_db)):

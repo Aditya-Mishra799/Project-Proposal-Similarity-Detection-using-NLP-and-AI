@@ -79,6 +79,6 @@ def query_faiss_index(query, k = 5):
     # get the saved embeddings 
     embeddings = np.load(EMBEDDINGS_FILE)
     # calculate simialrity scores
-    similarity_scores = [get_similarity(embeddings[idx], query_embedding) for idx in indices[0] if idx in faiss_idx_to_project_id]
+    similarity_scores = [get_similarity(embeddings[idx], query_embedding)for idx in indices[0] if idx in faiss_idx_to_project_id]
 
     return result_ids, distances, similarity_scores

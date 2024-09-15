@@ -97,3 +97,5 @@ Edit File:
 nano filename.txt
 
 -------------------------------------------------------------------------------------------
+Uvicorn Commands
+uvicorn main:app --reload
